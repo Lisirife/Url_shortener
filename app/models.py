@@ -3,7 +3,23 @@ import pytz
 import random
 import string
 
+from django.conf import settings
 from django.db import models
+
+from app.helpers import get_client_ip
+
+
+class UrlManager(models.Manager):
+    def create_url(self, request, url):
+        url_obj = self.create(
+            long_url=url,
+            ip=get_client_ip(request),
+            time=datetime.now(pytz.UTC)
+        )
+
+        url_obj.set_short_url()
+
+        return url_obj
 
 
 class Url(models.Model):
@@ -20,27 +36,13 @@ class Url(models.Model):
     expiration_time = models.IntegerField(default=360)
     hit_counter = models.IntegerField(default=0)
 
-    def set_info(self, request, url):
-        self.long_url = url
-        self.ip = self.get_client_ip(request)
-        self.time = datetime.now(pytz.UTC)
-        self.shortened_url = self.generate_id(6)
+    objects = UrlManager()
 
-    def get_shorted_url(self):
-        shortened_url = f'localhost:8000/app/{self.shortened_url}'
+    @property
+    def shorted_url(self):
+        shortened_url = f'localhost:8000/app/shorten/{self.shortened_url}'
         return shortened_url
 
-    @staticmethod
-    def generate_id(size):
-        chars = string.ascii_uppercase + string.digits
-        return ''.join(random.choice(chars) for _ in range(size))
-
-    @staticmethod
-    def get_client_ip(request):
-        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-        if x_forwarded_for:
-            ip = x_forwarded_for.split(',')[0]
-        else:
-            ip = request.META.get('REMOTE_ADDR')
-
-        return ip
+    def set_short_url(self):
+        charset = string.ascii_uppercase + string.digits
+        self.shortened_url = ''.join(random.choice(charset) for _ in range(settings.SHORT_URL_LEN))

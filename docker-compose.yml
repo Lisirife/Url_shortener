@@ -2,13 +2,14 @@ version: '3'
 
 services:
   db:
-    image: postgres
+    image: "postgres:latest"
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     ports:
       - "5432:5432"
+
   app:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
@@ -26,6 +27,6 @@ services:
       - redis
 
   redis:
-    image: "redis:alpine"
+    image: "redis:6.0.6-alpine"
     ports:
     - "6379:6379"

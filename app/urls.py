@@ -1,10 +1,10 @@
 from django.urls import path
 
-from app import views
+from app.views import IndexView, UrlView, UrlWithoutRedisView
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('shorten/', views.shorten, name='shorten'),
-    path('<id>/', views.detail, name='detail'),
-    path('detail_without_redis/<id>/', views.detail_without_redis, name='detail_without_redis'),
+    path('index/', IndexView.as_view()),
+    path('shorten/', UrlView.as_view()),
+    path('shorten/<pk>/', UrlView.as_view(), name='detail'),
+    path('detail_without_redis/<pk>', UrlWithoutRedisView.as_view(), name='detail_without_redis'),
 ]

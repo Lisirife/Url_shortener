@@ -91,7 +91,7 @@ DATABASES = {
 }
 
 
-# Caches
+# Redis
 REDIS_HOST = os.environ.get('REDIS_HOST')
 REDIS_PORT = os.environ.get('REDIS_PORT')
 
@@ -133,3 +133,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Length of shortened url id
+SHORT_URL_LEN = 6
